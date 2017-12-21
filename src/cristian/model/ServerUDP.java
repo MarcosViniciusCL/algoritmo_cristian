@@ -24,13 +24,21 @@ public class ServerUDP extends Observable {
     private DatagramSocket socket;
     private boolean monitorando;
     private List<Mensagem> mensagens;
+    
 
     public ServerUDP(int porta) throws SocketException {
         this.socket = new DatagramSocket(porta);
         this.mensagens = new ArrayList();
     }
+    
+    public void enviarMensagem(Mensagem mensagem) throws IOException{
+        String mens = mensagem.getProtocolo() + ":" + mensagem.getMensagem();
+        byte[] env = mens.getBytes();
+        DatagramPacket pkg = new DatagramPacket(env, env.length, mensagem.getEndereco(), 3434);
+        socket.send(pkg);
+    }
 
-    public void receberMensagem() {
+    private void receberMensagem() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -39,15 +47,17 @@ public class ServerUDP extends Observable {
                         byte[] mens = new byte[1024];
                         DatagramPacket pacote = new DatagramPacket(mens, mens.length);
                         socket.receive(pacote);
-                        mensagens.add(new Mensagem(pacote.getAddress(), new String(pacote.getData())));
-                        setChange();
+                        String receb[] = new String(pacote.getData()).split(":");
+                        mensagens.add(new Mensagem(pacote.getAddress(), receb[0], Integer.parseInt(receb[1])));
+                        setChanged();
+                        notifyObservers(mensagens);
                     } catch (IOException ex) {
                         Logger.getLogger(ServerUDP.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
 
-        });
+        }).start();
 
     }
 

@@ -14,12 +14,17 @@ import java.net.InetAddress;
 public class Mensagem {
     private InetAddress endereco;
     private String mensagem;
+    private int protocolo;
 
-    public Mensagem(InetAddress endereco, String mensagem) {
+    public Mensagem(InetAddress endereco, String mensagem, int protocolo) {
         this.endereco = endereco;
         this.mensagem = mensagem;
+        this.protocolo = protocolo;
     }
 
+    public void adicionarMensagem(String part){
+        this.mensagem += "-"+part;
+    }
     public InetAddress getEndereco() {
         return endereco;
     }
@@ -34,6 +39,14 @@ public class Mensagem {
 
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
+    }
+
+    public int getProtocolo() {
+        return protocolo;
+    }
+
+    public void setProtocolo(int protocolo) {
+        this.protocolo = protocolo;
     }
     
     
