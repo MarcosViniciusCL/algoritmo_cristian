@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -66,7 +67,7 @@ public class ControllerClient {
             String arg = "1:350";//"1:" + getHorario() + "";
             byte[] msg = arg.getBytes();
             //Monta o pacote a ser enviado
-            pkg = new DatagramPacket(msg, msg.length, InetAddress.getByName("127.0.0.1"), 2525);
+            pkg = new DatagramPacket(msg, msg.length, InetAddress.getByName(JOptionPane.showInputDialog("IP Server").trim()), 2525);
             socket = new DatagramSocket(3434);
             socket.send(pkg);
             arg = receberMensagem();
