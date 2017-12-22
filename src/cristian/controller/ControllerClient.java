@@ -52,7 +52,9 @@ public class ControllerClient {
             System.out.println("Tamanho: " + socket.getReceiveBufferSize());
             socket.receive(pkg);
             socket.close();
-            return new String(pkg.getData()).trim();
+            String resul = new String(msg , 0 ,pkg.getLength()).trim();
+            pkg.setLength(msg.length);
+            return resul;
         } catch (IOException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -94,7 +96,7 @@ public class ControllerClient {
         int a = Integer.parseInt(respb[0].trim());
         int x = Integer.parseInt(respb[1].trim());
         int y = Integer.parseInt(respb[2].trim());
-        int b = Integer.parseInt(respb[3].trim());
+        int b = 350;//(int) getHorario();
         System.out.println("A: " + a + "\nX: " + x + "\nY: " + y + "\nB: " + b);
         int delay = (b - a) - (y - x);
         int deslocamento = (y + delay / 2) - b;

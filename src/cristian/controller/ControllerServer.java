@@ -41,7 +41,8 @@ public class ControllerServer implements Observer {
             Thread.sleep(3000);
             mens.adicionarMensagem(getHorario() + "");
             mens.setProtocolo(2);
-            this.server.enviarMensagem(mens);
+            String isso = mens.getProtocolo() + ":" + mens.getMensagem();
+            this.server.enviarMensagem(mens, isso);
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(ControllerServer.class.getName()).log(Level.SEVERE, null, ex);
         }

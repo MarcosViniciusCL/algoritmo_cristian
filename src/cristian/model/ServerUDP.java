@@ -34,15 +34,17 @@ public class ServerUDP extends Observable {
         setMonitorando(true);
     }
 
-    public void enviarMensagem(Mensagem mensagem) throws IOException {
-
-        String mens = mensagem.getProtocolo() + ":" + mensagem.getMensagem();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(outputStream);
-        os.writeObject(mens);
-        byte[] env = outputStream.toByteArray();
-        DatagramPacket pkg = new DatagramPacket(env, env.length, mensagem.getEndereco(), 3434);
-        socket.send(pkg);
+    public void enviarMensagem(Mensagem mensagem, String mensEnviar) throws IOException {
+        String aux =  "2:300,200,250"; //;
+        String mens = aux.trim();
+        byte[] msg = mens.getBytes();
+        DatagramPacket dgram = new DatagramPacket(msg, msg.length, mensagem.getEndereco(), 3434);
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+//        os.writeObject(mens);
+//        byte[] env = outputStream.toByteArray();
+//        DatagramPacket pkg = new DatagramPacket(env, env.length, mensagem.getEndereco(), 3434);
+        socket.send(dgram);
     }
 
     private void receberMensagem() {
