@@ -6,7 +6,9 @@
 package cristian.controller;
 
 import cristian.model.Mensagem;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -48,6 +50,7 @@ public class ControllerClient {
             //Prepara o pacote de dados
             DatagramPacket pkg = new DatagramPacket(msg, msg.length);
             //Recebimento da mensagem
+            System.out.println("Tamanho: " + ds.getReceiveBufferSize());
             ds.receive(pkg);
             ds.close();
             return new String(pkg.getData()).trim();
@@ -55,10 +58,10 @@ public class ControllerClient {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-        
+
     }
 
-    public void atualizarHorario() {
+    public String atualizarHorario() {
 
         DatagramPacket pkg;
         try {
@@ -66,21 +69,31 @@ public class ControllerClient {
             byte[] msg = arg.getBytes();
             //Monta o pacote a ser enviado
             pkg = new DatagramPacket(msg, msg.length, InetAddress.getByName("127.0.0.1"), 2525);
-            DatagramSocket ds = new DatagramSocket();
+            DatagramSocket ds = new DatagramSocket(Integer.parseInt("3434"));
             ds.send(pkg);
+
+            //Preparando o buffer de recebimento da mensagem
+            msg = new byte[1024];
+            //Prepara o pacote de dados
+            pkg = new DatagramPacket(msg, msg.length);
+            ds.receive(pkg);
+            byte[] data = pkg.getData();
+            ByteArrayInputStream in = new ByteArrayInputStream(data);
+            ObjectInputStream is = new ObjectInputStream(in);
+            arg = (String) is.readObject();
+            ds.close();
+            return arg;
         } catch (UnknownHostException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SocketException ex) {
+        } catch (SocketException | ClassNotFoundException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Cria o DatagramSocket que será responsável por enviar a mensagem
-
-        //Envia a mensagem
+        return null;
     }
 
     private long getHorario() {
-        return Calendar.getInstance().get(Calendar.SECOND);
+        return Calendar.getInstance().getTimeInMillis();
     }
 }

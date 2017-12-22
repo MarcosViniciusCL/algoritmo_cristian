@@ -29,6 +29,7 @@ public class ControllerServer implements Observer {
     private ControllerServer() {
         try {
             this.server = new ServerUDP(2525);
+            this.server.addObserver(this);
         } catch (SocketException ex) {
             Logger.getLogger(ControllerServer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -47,7 +48,7 @@ public class ControllerServer implements Observer {
     }
 
     private long getHorario() {
-        return Calendar.getInstance().get(Calendar.SECOND);
+        return Calendar.getInstance().getTimeInMillis();
     }
 
     public static ControllerServer getInstance() {

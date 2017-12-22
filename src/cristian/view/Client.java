@@ -14,7 +14,6 @@ import cristian.controller.ControllerClient;
 public class Client {
     public static void main (String args[]){
         ControllerClient controller = ControllerClient.getInstance();
-        controller.atualizarHorario();
-        System.out.println(controller.receberMensagem());
+        System.out.println(controller.atualizarHorario());
     }
 }

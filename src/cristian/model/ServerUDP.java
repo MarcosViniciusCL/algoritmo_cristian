@@ -5,7 +5,9 @@
  */
 package cristian.model;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -24,16 +26,21 @@ public class ServerUDP extends Observable {
     private DatagramSocket socket;
     private boolean monitorando;
     private List<Mensagem> mensagens;
-    
 
     public ServerUDP(int porta) throws SocketException {
+        System.out.println("Iniciando servidor.");
         this.socket = new DatagramSocket(porta);
         this.mensagens = new ArrayList();
+        setMonitorando(true);
     }
-    
-    public void enviarMensagem(Mensagem mensagem) throws IOException{
+
+    public void enviarMensagem(Mensagem mensagem) throws IOException {
+
         String mens = mensagem.getProtocolo() + ":" + mensagem.getMensagem();
-        byte[] env = mens.getBytes();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+        os.writeObject(mens);
+        byte[] env = outputStream.toByteArray();
         DatagramPacket pkg = new DatagramPacket(env, env.length, mensagem.getEndereco(), 3434);
         socket.send(pkg);
     }
@@ -48,7 +55,8 @@ public class ServerUDP extends Observable {
                         DatagramPacket pacote = new DatagramPacket(mens, mens.length);
                         socket.receive(pacote);
                         String receb[] = new String(pacote.getData()).split(":");
-                        mensagens.add(new Mensagem(pacote.getAddress(), receb[0], Integer.parseInt(receb[1])));
+                        System.out.println("Nova mensagem recebida: " + pacote.getAddress());
+                        mensagens.add(new Mensagem(pacote.getAddress(), receb[1], Integer.parseInt(receb[0].trim())));
                         setChanged();
                         notifyObservers(mensagens);
                     } catch (IOException ex) {
@@ -66,6 +74,7 @@ public class ServerUDP extends Observable {
     }
 
     public void setMonitorando(boolean monitorando) {
+        System.out.println("Aguardando mensagem de cliente.");
         this.monitorando = monitorando;
         if (monitorando) {
             receberMensagem();
