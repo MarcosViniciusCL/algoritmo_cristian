@@ -23,7 +23,7 @@ public class Mensagem {
     }
 
     public void adicionarMensagem(String part){
-        this.mensagem += "-"+part;
+        this.mensagem += ","+part;
     }
     public InetAddress getEndereco() {
         return endereco;

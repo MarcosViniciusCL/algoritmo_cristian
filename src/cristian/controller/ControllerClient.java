@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 public class ControllerClient {
 
     private static ControllerClient controller;
+    DatagramSocket socket;
 
     public static ControllerClient getInstance() {
         if (ControllerClient.controller == null) {
@@ -43,16 +44,13 @@ public class ControllerClient {
 
         //Cria o DatagramSocket para aguardar mensagens, neste momento o método fica bloqueando
         try {
-            //até o recebimente de uma mensagem
-            DatagramSocket ds = new DatagramSocket(Integer.parseInt("3434"));
-            //Preparando o buffer de recebimento da mensagem
             byte[] msg = new byte[1024];
             //Prepara o pacote de dados
             DatagramPacket pkg = new DatagramPacket(msg, msg.length);
             //Recebimento da mensagem
-            System.out.println("Tamanho: " + ds.getReceiveBufferSize());
-            ds.receive(pkg);
-            ds.close();
+            System.out.println("Tamanho: " + socket.getReceiveBufferSize());
+            socket.receive(pkg);
+            socket.close();
             return new String(pkg.getData()).trim();
         } catch (IOException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -65,27 +63,19 @@ public class ControllerClient {
 
         DatagramPacket pkg;
         try {
-            String arg = "1:" + getHorario() + "";
+            String arg = "1:350";//"1:" + getHorario() + "";
             byte[] msg = arg.getBytes();
             //Monta o pacote a ser enviado
             pkg = new DatagramPacket(msg, msg.length, InetAddress.getByName("127.0.0.1"), 2525);
-            DatagramSocket ds = new DatagramSocket(Integer.parseInt("3434"));
-            ds.send(pkg);
-
-            //Preparando o buffer de recebimento da mensagem
-            msg = new byte[1024];
-            //Prepara o pacote de dados
-            pkg = new DatagramPacket(msg, msg.length);
-            ds.receive(pkg);
-            byte[] data = pkg.getData();
-            ByteArrayInputStream in = new ByteArrayInputStream(data);
-            ObjectInputStream is = new ObjectInputStream(in);
-            arg = (String) is.readObject();
-            ds.close();
-            return arg;
+            socket = new DatagramSocket(3434);
+            socket.send(pkg);
+            arg = receberMensagem();
+         
+            System.out.println(arg);
+            alg_cristian(arg);
         } catch (UnknownHostException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SocketException | ClassNotFoundException ex) {
+        } catch (SocketException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ControllerClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -94,6 +84,21 @@ public class ControllerClient {
     }
 
     private long getHorario() {
-        return Calendar.getInstance().getTimeInMillis();
+        return Calendar.getInstance().get(Calendar.SECOND);
+    }
+
+    private void alg_cristian(String arg) {
+        String respa[] = arg.split(":");
+        String respb[] = respa[1].split(",");
+        int a = Integer.parseInt(respb[0].trim());
+        int x = Integer.parseInt(respb[1].trim());
+        int y = Integer.parseInt(respb[2].trim());
+        int b = Integer.parseInt(respb[3].trim());
+        System.out.println("A: " + a + "\nX: " + x + "\nY: " + y + "\nB: " + b);
+        int delay = (b - a) - (y - x);
+        int deslocamento = (y + delay / 2) - b;
+        System.out.println("Delay: " + delay);
+        System.out.println("Deslocamento: " + deslocamento);
+
     }
 }

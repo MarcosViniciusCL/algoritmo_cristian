@@ -48,7 +48,7 @@ public class ControllerServer implements Observer {
     }
 
     private long getHorario() {
-        return Calendar.getInstance().getTimeInMillis();
+        return Calendar.getInstance().get(Calendar.SECOND);
     }
 
     public static ControllerServer getInstance() {
